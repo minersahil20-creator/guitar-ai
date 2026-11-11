@@ -268,6 +268,7 @@ def probe(url: str) -> dict:
 
     opts = dict(_base_opts())
     opts["skip_download"] = True
+    opts.pop("format", None)
     info = None
     try:
         with yt_dlp.YoutubeDL(opts) as ydl:
@@ -373,6 +374,7 @@ def fetch_audio(url: str, dest_dir: Path, max_duration: float | None = None) -> 
 
     # 2. download only the audio stream
     opts = dict(_base_opts())
+    opts["format"] = "ba/b,bestaudio/best,best"
     opts["outtmpl"] = template
     opts["noprogress"] = True
 
