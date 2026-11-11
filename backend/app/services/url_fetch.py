@@ -240,11 +240,10 @@ def _base_opts() -> dict:
         opts["cookiefile"] = settings.YTDLP_COOKIES_FILE
     elif COOKIES_PATH.exists() and COOKIES_PATH.stat().st_size > 0:
         opts["cookiefile"] = str(COOKIES_PATH)
-    # Try several YouTube player clients in order (default to android, tv_embedded, web to avoid bot check)
+    # Player clients: default to yt-dlp native auto-negotiation (with yt-dlp-ejs solver), or use custom if set
     clients = [c.strip() for c in settings.YTDLP_PLAYER_CLIENTS.split(",") if c.strip() and c.strip() != "default"]
-    if not clients:
-        clients = ["android", "tv_embedded", "web"]
-    opts["extractor_args"] = {"youtube": {"player_client": clients}}
+    if clients:
+        opts["extractor_args"] = {"youtube": {"player_client": clients}}
     return opts
 
 

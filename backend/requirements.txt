@@ -15,6 +15,7 @@ scipy>=1.10
 librosa>=0.10            # tempo, chroma, key, onsets, HPSS
 soundfile>=0.12.1        # wav/flac/ogg read+write via libsndfile
 yt-dlp>=2024.1.1         # fetch the audio behind a pasted link (public media only)
+yt-dlp-ejs>=0.8.0        # YouTube JS challenge solver (runs natively without remote downloads)
 imageio-ffmpeg>=0.4.9    # ships a static ffmpeg: decodes mp3/m4a/mp4 + converts downloads
 pydantic>=2.5
 pydantic-settings>=2.1
