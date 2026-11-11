@@ -42,3 +42,5 @@ backend/.bin/
 # never commit your own session cookies
 backend/cookies.txt
 cookies.txt
+cloudflared.exe
+*.exe
