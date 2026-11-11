@@ -526,7 +526,7 @@ def _persist_cookies_setting(value: str) -> None:
 def cookie_status() -> dict:
     """Metadata only — the file's contents are never returned to a client."""
     path = settings.YTDLP_COOKIES_FILE
-    p = Path(path) if path else None
+    p = Path(path) if (path and Path(path).exists()) else (COOKIES_PATH if COOKIES_PATH.exists() else None)
     if not p or not p.exists():
         return {"loaded": False, "entries": 0, "domains": [], "youtube": False,
                 "instagram": False, "expires_at": None, "expires_in_days": None}

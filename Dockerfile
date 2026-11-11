@@ -15,7 +15,8 @@ ENV HOME=/home/user \
     PATH=/home/user/.local/bin:$PATH \
     PYTHONPATH=/home/user/app/backend:$PYTHONPATH \
     PYTHONUNBUFFERED=1 \
-    PORT=10000
+    PORT=10000 \
+    YTDLP_COOKIES_FILE=/home/user/app/backend/cookies.txt
 
 WORKDIR /home/user/app
 

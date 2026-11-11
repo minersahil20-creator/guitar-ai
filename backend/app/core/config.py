@@ -113,9 +113,11 @@ class Settings:
     YTDLP_PATH: str = os.getenv("YTDLP_PATH", "yt-dlp")
     # Longest clip we will pull from a link (seconds). Also caps RAM usage.
     URL_MAX_DURATION_SEC: float = _env_float("URL_MAX_DURATION_SEC", 900)
-    # Optional: path to a cookies.txt you exported yourself, for platforms that
-    # need a logged-in session. Leave empty for anonymous/public access.
-    YTDLP_COOKIES_FILE: str = os.getenv("YTDLP_COOKIES_FILE", "").strip()
+    # Default to backend/cookies.txt if present
+    YTDLP_COOKIES_FILE: str = os.getenv(
+        "YTDLP_COOKIES_FILE",
+        str(BACKEND_DIR / "cookies.txt") if (BACKEND_DIR / "cookies.txt").exists() else ""
+    ).strip()
     # YouTube player clients tried in order (some work on IPs where others don't).
     YTDLP_PLAYER_CLIENTS: str = os.getenv(
         "YTDLP_PLAYER_CLIENTS", "").strip()
