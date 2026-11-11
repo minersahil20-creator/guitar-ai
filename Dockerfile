@@ -1,10 +1,11 @@
 # Lightweight Dockerfile for Guitar AI (Render & Cloud compatible)
 FROM python:3.10-slim
 
-# System dependencies for audio (ffmpeg, libsndfile)
+# System dependencies for audio (ffmpeg, libsndfile) and YouTube JS challenges (nodejs)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     libsndfile1 \
+    nodejs \
     && rm -rf /var/lib/apt/lists/*
 
 # Set up user for security (UID 1000)

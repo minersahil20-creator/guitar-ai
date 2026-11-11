@@ -235,6 +235,7 @@ def _base_opts() -> dict:
         opts["ffmpeg_location"] = str(Path(ff).parent)
     if shutil.which("node"):
         opts["js_runtimes"] = {"node": {}}
+    opts["remote_components"] = ["ejs:github"]
     if settings.YTDLP_COOKIES_FILE and Path(settings.YTDLP_COOKIES_FILE).exists():
         opts["cookiefile"] = settings.YTDLP_COOKIES_FILE
     elif COOKIES_PATH.exists() and COOKIES_PATH.stat().st_size > 0:
