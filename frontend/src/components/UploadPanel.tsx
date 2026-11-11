@@ -101,7 +101,7 @@ export default function UploadPanel({ compact = false, onStarted }: Props) {
     }
   }
 
-  const urlReady = !!url.trim() && !!urlInfo?.can_fetch
+  const urlReady = !!url.trim() && (urlInfo === null || urlInfo?.can_fetch !== false)
 
   return (
     <div className="space-y-4">
