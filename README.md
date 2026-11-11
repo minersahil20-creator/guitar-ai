@@ -10,6 +10,8 @@ pinned: false
 
 # 🎸 Fretwork AI — AI guitar analysis you run yourself
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/minersahil20-creator/guitar-ai)
+
 Upload a recording of guitar playing and get **chords**, **key**, **scales**, **solo
 notes as tablature**, an **isolated guitar track**, a **backing track with the guitar
 removed**, and a **practice studio** that slows songs down without changing the pitch.

@@ -41,6 +41,6 @@ COPY --chown=user:user --from=frontend-build /app/frontend/dist ./frontend/dist
 # Create uploads and processed directories
 RUN mkdir -p uploads processed && chmod 777 uploads processed
 
-EXPOSE 7860
+EXPOSE 7860 10000 8000
 
-CMD ["python", "-m", "uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["sh", "-c", "python -m uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT:-7860}"]
