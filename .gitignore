@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Node
+node_modules/
+dist/
+dist-ssr/
+.vite/
+
+# Secrets — NEVER commit your API key
+.env
+*.env
+!.env.example
+
+# Data: audio in/out, models, job results
+uploads/*
+!uploads/.gitkeep
+processed/*
+!processed/.gitkeep
+models/*
+!models/.gitkeep
+*.wav
+*.mp3
+*.mp4
+*.m4a
+*.flac
+*.ogg
+*.mid
+*.thumbs
+
+# OS
+.DS_Store
+Thumbs.db
+
+# local ffmpeg symlink created by app/core/ffmpeg.py
+backend/.bin/
+
+# never commit your own session cookies
+backend/cookies.txt
+cookies.txt

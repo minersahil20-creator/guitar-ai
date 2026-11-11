@@ -1,0 +1,80 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║  FRETWORK AI — start here                                             ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+This is a ZIP, not a RAR — RAR needs paid/proprietary software to create,
+while a ZIP opens natively on Windows, macOS and Linux (double-click it).
+
+────────────────────────────────────────────────────────────────────────
+1. RUN IT  (4 commands, two terminals)
+────────────────────────────────────────────────────────────────────────
+
+TERMINAL 1 — backend:
+
+    cd guitar-ai/backend
+    python3 -m venv .venv && source .venv/bin/activate
+    pip install -r requirements.txt
+    uvicorn app.main:app --reload --port 8000
+
+    On Windows replace the 2nd line with:  .venv\Scripts\activate
+
+TERMINAL 2 — frontend:
+
+    cd guitar-ai/frontend
+    npm install
+    npm run dev
+
+Then open  http://localhost:5173
+
+`npm install` re-downloads the React packages. They are NOT in this ZIP
+(the folder would be ~150 MB); everything else is here.
+
+Prefer one command?  ./scripts/start-dev.sh   (macOS/Linux)
+                      scripts\start-dev.bat    (Windows)
+
+────────────────────────────────────────────────────────────────────────
+2. ANALYSE SOMETHING
+────────────────────────────────────────────────────────────────────────
+
+• Drag in an audio/video file (mp3, wav, m4a, flac, ogg, mp4, mov, mkv).
+• Or paste a link → Check link → Fetch & analyse.
+• No recording handy?  python3 tools/make_test_audio.py
+  (writes test_audio/guitar_test.wav — a known Am–F–C–G progression with a
+  solo, so you can check the app against ground truth.)
+
+────────────────────────────────────────────────────────────────────────
+3. YOUTUBE LINKS — READ THIS IF IT SAYS "confirm you're not a bot"
+────────────────────────────────────────────────────────────────────────
+
+YouTube blocks downloads that come from server/cloud IP addresses. Your own
+computer is usually fine. If you do see the bot check:
+
+  1. Install the browser extension "Get cookies.txt LOCALLY".
+  2. Open youtube.com while SIGNED IN to your account.
+  3. Extension → Export → Current site → save the file.
+  4. In the app: Settings → Link fetching → Upload cookies.txt.
+  5. Try the link again.
+
+SoundCloud links and direct file links always work, no cookies needed.
+Uploading a file always works.
+
+────────────────────────────────────────────────────────────────────────
+4. WHAT'S INSIDE
+────────────────────────────────────────────────────────────────────────
+
+  README.md              full guide: how each algorithm works, verified
+                         accuracy figures, troubleshooting, deployment
+  backend/               FastAPI app  (app/api, app/audio, app/services,
+                         app/ai, app/core)  +  .env settings file
+  frontend/              React + TypeScript + Vite + Tailwind UI
+  scripts/               one-command launchers for both servers
+  tools/                 make_test_audio.py (fixture generator),
+                         tune_chords.py (accuracy scorer)
+  test_audio/            two WAV fixtures for testing
+
+Optional extras (the app runs fine without them):
+  pip install demucs          → real AI stem separation (needs ~2 GB RAM)
+  pip install basic-pitch     → neural transcription (needs Python 3.11/3.12)
+  GEMINI_API_KEY in backend/.env → AI prose explanations (free tier)
+
+Full detail: open README.md.

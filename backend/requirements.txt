@@ -1,0 +1,33 @@
+# ─────────────────────────────────────────────────────────────
+# Guitar AI — Backend requirements
+# Tier 1 = REQUIRED (light, installs in ~1 min, runs on any laptop)
+# Tier 2 = OPTIONAL (heavy ML models; app auto-detects and upgrades to them)
+# ─────────────────────────────────────────────────────────────
+
+# ---- TIER 1: core web + DSP (REQUIRED) ----
+fastapi>=0.110
+uvicorn[standard]>=0.27
+python-multipart>=0.0.9
+aiofiles>=23.2.1
+python-dotenv>=1.0.0
+numpy>=1.24
+scipy>=1.10
+librosa>=0.10            # tempo, chroma, key, onsets, HPSS
+soundfile>=0.12.1        # wav/flac/ogg read+write via libsndfile
+yt-dlp>=2024.1.1         # fetch the audio behind a pasted link (public media only)
+imageio-ffmpeg>=0.4.9    # ships a static ffmpeg: decodes mp3/m4a/mp4 + converts downloads
+pydantic>=2.5
+pydantic-settings>=2.1
+
+# ---- TIER 2: optional heavy models (install ONLY if you want them) ----
+# The app runs fine without these — it falls back to Tier-1 DSP engines
+# and tells you in the UI which engine produced each result.
+# basic-pitch>=0.4.0     # Spotify Basic Pitch  -> audio-to-MIDI (pulls TensorFlow ~900MB)
+# demucs>=4.0.0          # Meta Demucs          -> stem separation (pulls PyTorch ~800MB)
+# crepe>=0.0.14          # CREPE pitch tracker  -> high-accuracy monophonic pitch
+# torch>=2.0             # needed by demucs / many research models
+# tensorflow-cpu>=2.15   # needed by basic-pitch
+
+# ---- TIER 2 (continued): link fetching extras ----
+# Nothing else is needed for links. If you want a system-wide ffmpeg instead of
+# the pip one:  macOS: brew install ffmpeg   ·   Ubuntu: sudo apt install ffmpeg

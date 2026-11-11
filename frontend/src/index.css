@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────
+   Fretwork AI — design tokens
+   A dark "studio console" look: near-black canvas, graphite panels,
+   warm amber (wood/strings) as the primary accent and a cool violet
+   for anything AI-generated.
+   ───────────────────────────────────────────────────────────── */
+@theme {
+  --color-ink-950: #07080c;
+  --color-ink-900: #0b0d13;
+  --color-ink-850: #101219;
+  --color-ink-800: #151823;
+  --color-ink-700: #1d2130;
+  --color-ink-600: #2a2f42;
+  --color-ink-500: #3d445c;
+
+  --color-amber-glow: #fbbf24;
+  --color-string: #d8c9a8;
+  --color-ai: #a78bfa;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  background:
+    radial-gradient(1200px 600px at 15% -10%, rgba(251, 191, 36, 0.07), transparent 60%),
+    radial-gradient(900px 500px at 90% 0%, rgba(167, 139, 250, 0.07), transparent 55%),
+    var(--color-ink-950);
+  color: #e7e9f0;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* thin, dark scrollbars */
+* { scrollbar-width: thin; scrollbar-color: #2a2f42 transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: #232838; border-radius: 99px; border: 2px solid transparent; background-clip: content-box; }
+*::-webkit-scrollbar-thumb:hover { background: #333a52; background-clip: content-box; }
+
+@utility panel {
+  background: linear-gradient(180deg, rgba(21,24,35,0.9), rgba(11,13,19,0.9));
+  border: 1px solid var(--color-ink-700);
+  border-radius: 1rem;
+}
+
+@utility card {
+  background: rgba(16, 18, 25, 0.75);
+  border: 1px solid var(--color-ink-700);
+  border-radius: 0.85rem;
+}
+
+@utility glow-amber {
+  box-shadow: 0 0 0 1px rgba(251,191,36,.35), 0 8px 30px -8px rgba(251,191,36,.35);
+}
+
+@utility text-gradient {
+  background: linear-gradient(100deg, #fde68a 0%, #fbbf24 40%, #f59e0b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Animations */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px);} to {opacity:1; transform:none;} }
+@keyframes shimmer { 100% { transform: translateX(100%);} }
+@keyframes pulseRing {
+  0%   { box-shadow: 0 0 0 0 rgba(251,191,36,.45); }
+  70%  { box-shadow: 0 0 0 14px rgba(251,191,36,0); }
+  100% { box-shadow: 0 0 0 0 rgba(251,191,36,0); }
+}
+@keyframes spinSlow { to { transform: rotate(360deg);} }
+
+.animate-fade-up { animation: fadeUp .45s cubic-bezier(.22,1,.36,1) both; }
+.animate-pulse-ring { animation: pulseRing 2s cubic-bezier(.4,0,.6,1) infinite; }
+.animate-spin-slow { animation: spinSlow 14s linear infinite; }
+
+.shimmer {
+  position: relative; overflow: hidden;
+}
+.shimmer::after {
+  content: ""; position: absolute; inset: 0; transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+  animation: shimmer 1.6s infinite;
+}
+
+/* range inputs styled like studio faders */
+input[type="range"] {
+  -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px; border-radius: 99px; background: var(--color-ink-600);
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; margin-top: -6px;
+  width: 16px; height: 16px; border-radius: 99px;
+  background: linear-gradient(180deg, #fde68a, #f59e0b);
+  border: 1px solid #b45309; box-shadow: 0 2px 8px rgba(0,0,0,.5);
+}
+input[type="range"]::-moz-range-track { height: 4px; border-radius: 99px; background: var(--color-ink-600); }
+input[type="range"]::-moz-range-thumb {
+  width: 14px; height: 14px; border: 1px solid #b45309; border-radius: 99px;
+  background: linear-gradient(180deg, #fde68a, #f59e0b);
+}
+
+/* Tablature needs a strict monospace grid */
+.tab-line { font-family: var(--font-mono); white-space: pre; letter-spacing: .02em; }
