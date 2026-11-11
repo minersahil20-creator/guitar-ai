@@ -1,11 +1,14 @@
 # Lightweight Dockerfile for Guitar AI (Render & Cloud compatible)
 FROM python:3.10-slim
 
-# System dependencies for audio (ffmpeg, libsndfile) and YouTube JS challenges (nodejs)
+# System dependencies for audio (ffmpeg, libsndfile) and Deno (yt-dlp official JS challenge engine)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     libsndfile1 \
-    nodejs \
+    curl \
+    unzip \
+    && curl -fsSL https://deno.land/install.sh | DENO_INSTALL=/usr/local sh \
+    && apt-get purge -y --auto-remove curl unzip \
     && rm -rf /var/lib/apt/lists/*
 
 # Set up user for security (UID 1000)

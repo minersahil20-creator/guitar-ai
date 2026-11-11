@@ -233,7 +233,9 @@ def _base_opts() -> dict:
     ff = resolve_ffmpeg()
     if ff:
         opts["ffmpeg_location"] = str(Path(ff).parent)
-    if shutil.which("node"):
+    if shutil.which("deno"):
+        opts["js_runtimes"] = {"deno": {}}
+    elif shutil.which("node"):
         opts["js_runtimes"] = {"node": {}}
     if settings.YTDLP_COOKIES_FILE and Path(settings.YTDLP_COOKIES_FILE).exists():
         opts["cookiefile"] = settings.YTDLP_COOKIES_FILE

@@ -22,7 +22,8 @@ def health():
     return {
         "status": "ok",
         "service": "guitar-ai-backend",
-        "version": "v1.0.5-ejs-ready",
+        "version": "v1.0.6-deno",
+        "has_deno": bool(shutil.which("deno")),
         "has_node": bool(shutil.which("node")),
         "has_ejs": bool(importlib.util.find_spec("yt_dlp_ejs")),
         "python": platform.python_version(),
