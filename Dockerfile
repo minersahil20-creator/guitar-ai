@@ -24,6 +24,7 @@ RUN useradd -m -u 1000 user
 USER user
 ENV HOME=/home/user \
     PATH=/home/user/.local/bin:$PATH \
+    PYTHONPATH=/home/user/app/backend:$PYTHONPATH \
     PYTHONUNBUFFERED=1 \
     PORT=7860
 
@@ -43,4 +44,4 @@ RUN mkdir -p uploads processed && chmod 777 uploads processed
 
 EXPOSE 7860 10000 8000
 
-CMD ["sh", "-c", "python -m uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT:-7860}"]
+CMD ["sh", "-c", "python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-7860}"]
