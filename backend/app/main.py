@@ -57,6 +57,14 @@ app.include_router(projects.router)
 @app.on_event("startup")
 def on_startup():
     cleanup_old_files()
+    cookies_env = os.getenv("YTDLP_COOKIES_TEXT", "").strip()
+    if cookies_env:
+        try:
+            from app.services import url_fetch
+            url_fetch.save_cookies(cookies_env)
+            log.info("Loaded YTDLP_COOKIES_TEXT from environment")
+        except Exception as exc:
+            log.warning("Failed to load YTDLP_COOKIES_TEXT: %s", exc)
     log.info("Guitar AI backend ready — uploads=%s processed=%s",
              settings.UPLOAD_DIR, settings.PROCESSED_DIR)
 
