@@ -23,6 +23,7 @@ WORKDIR /home/user/app
 # Install lightweight Python dependencies
 COPY --chown=user:user backend/requirements.txt ./backend/
 RUN pip install --no-cache-dir -r backend/requirements.txt
+RUN pip install --no-cache-dir -U yt-dlp yt-dlp-ejs
 
 # Copy backend code and pre-built frontend distribution
 COPY --chown=user:user backend/ ./backend/

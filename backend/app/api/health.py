@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import platform
 import shutil
 
@@ -21,8 +22,9 @@ def health():
     return {
         "status": "ok",
         "service": "guitar-ai-backend",
-        "version": "v1.0.4-ejs",
+        "version": "v1.0.5-ejs-ready",
         "has_node": bool(shutil.which("node")),
+        "has_ejs": bool(importlib.util.find_spec("yt_dlp_ejs")),
         "python": platform.python_version(),
         "platform": platform.system(),
     }
