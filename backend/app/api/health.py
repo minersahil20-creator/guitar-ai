@@ -30,6 +30,35 @@ def health():
     }
 
 
+@router.get("/diag-ytdlp")
+def diag_ytdlp(url: str = "https://www.youtube.com/shorts/m7wU7THe8T8"):
+    import yt_dlp
+    opts = url_fetch._base_opts()
+    opts["skip_download"] = True
+    opts.pop("format", None)
+    opts["quiet"] = False
+    opts["verbose"] = True
+    logs = []
+
+    class Logger:
+        def debug(self, msg):
+            logs.append(f"DEBUG: {msg}")
+
+        def warning(self, msg):
+            logs.append(f"WARN: {msg}")
+
+        def error(self, msg):
+            logs.append(f"ERR: {msg}")
+
+    opts["logger"] = Logger()
+    try:
+        with yt_dlp.YoutubeDL(opts) as ydl:
+            info = ydl.extract_info(url, download=False)
+            return {"ok": True, "title": info.get("title"), "logs": logs}
+    except Exception as e:
+        return {"ok": False, "error": str(e), "logs": logs}
+
+
 @router.get("/capabilities")
 def capabilities():
     """Tells the frontend exactly which engines will run — no guessing."""
