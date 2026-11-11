@@ -21,7 +21,7 @@ def health():
     return {
         "status": "ok",
         "service": "guitar-ai-backend",
-        "version": "v1.0.3-node",
+        "version": "v1.0.4-ejs",
         "has_node": bool(shutil.which("node")),
         "python": platform.python_version(),
         "platform": platform.system(),
