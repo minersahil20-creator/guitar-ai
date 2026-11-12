@@ -35,6 +35,9 @@ models/*
 # OS
 .DS_Store
 Thumbs.db
+logs/
+tools/
+CLOUDFLARE_URL.txt
 
 # local ffmpeg symlink created by app/core/ffmpeg.py
 backend/.bin/
