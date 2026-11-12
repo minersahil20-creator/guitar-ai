@@ -160,6 +160,10 @@ def _transcribe_cqt(y: np.ndarray, sr: int, fmin: float = 70.0, fmax: float = 15
     """
     import librosa
 
+    if sr > 22050:
+        y = librosa.resample(y, orig_sr=sr, target_sr=22050)
+        sr = 22050
+
     # 1. Separate harmonic content (notes live in harmonic part; cymbals/kicks in percussive)
     try:
         y_harm, _ = librosa.effects.hpss(y, margin=(1.1, 1.4))
