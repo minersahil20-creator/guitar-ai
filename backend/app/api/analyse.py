@@ -127,19 +127,30 @@ async def analyse_file(file: UploadFile = File(...), options: str = Form("{}")):
     }
 
 
+def _run_url_job(progress, job_id: str, url: str, opts: dict, dest_dir: Path):
+    from app.services import url_fetch
+    progress(2, "Fetching audio from link…", "download")
+    try:
+        got, meta = url_fetch.fetch_audio(url, dest_dir)
+    except Exception as exc:
+        shutil.rmtree(dest_dir, ignore_errors=True)
+        raise exc
+
+    progress(8, f"Downloaded: {meta.get('title', 'audio')}", "download")
+    opts["name"] = opts.get("name") or (meta.get("title") or "")[:60]
+    opts["source_type"] = "url"
+    opts["source_url"] = url
+    return pipeline.run(progress, job_id=job_id, source_path=got, options=opts)
+
+
 @router.post("/analyse/url")
 async def analyse_url(payload: dict):
     """
-    Paste-a-link path: fetch the audio, then run the same pipeline as an upload.
-
-    Public media only. If the platform refuses (age gate, private, region
-    block, bot check, login wall) we return 422 with the exact reason and what
-    to do instead — we do not work around it.
+    Paste-a-link path: returns a job ID immediately so the UI can navigate
+    to /analyse right away and show real-time progress while downloading
+    and processing the audio.
     """
-    from fastapi.responses import JSONResponse
-
     from app.api.media import classify_url
-    from app.services import url_fetch
 
     url = (payload or {}).get("url", "")
     info = classify_url(url)
@@ -149,34 +160,14 @@ async def analyse_url(payload: dict):
     job_id = f"job_{uuid.uuid4().hex[:12]}"
     d = store.job_dir(job_id)
 
-    import asyncio
-    try:
-        got, meta = await asyncio.get_running_loop().run_in_executor(
-            None, lambda: url_fetch.fetch_audio(url, d))
-    except url_fetch.UrlFetchError as err:
-        shutil.rmtree(d, ignore_errors=True)
-        return JSONResponse(status_code=422, content={
-            "error": "url_not_fetchable",
-            "kind": err.kind,
-            "message": err.message,
-            "hint": err.hint,
-            "info": {**info, "can_fetch": False,
-                     "why_blocked": err.message, "what_to_do": err.hint},
-        })
-
     opts = dict(DEFAULT_OPTIONS)
     opts.update((payload or {}).get("options") or {})
-    opts["name"] = opts.get("name") or (meta.get("title") or "")[:60]
-    opts["source_type"] = "url"
-    opts["source_url"] = url
 
-    jobs.create(job_id=job_id, kind="analyse")
-    jobs.submit(job_id, pipeline.run, job_id=job_id, source_path=got, options=opts)
+    job = jobs.create(job_id=job_id, kind="analyse")
+    jobs.submit(job_id, _run_url_job, job_id=job_id, url=url, opts=opts, dest_dir=d)
     return {
         "job_id": job_id,
-        "status": "queued",
-        "title": meta.get("title"),
-        "duration": meta.get("duration"),
+        "status": job["status"],
         "poll": f"/api/jobs/{job_id}",
         "result": f"/api/results/{job_id}",
         "estimated_seconds": _estimate(opts),

@@ -70,6 +70,7 @@ export default function Analyse() {
         <Card>
           <ol className="space-y-1.5 text-[12px]">
             {[
+              ['download', 'Fetching audio from link'],
               ['load', 'Decoding audio'],
               ['features', 'Tempo, beats, key, chroma'],
               ['chords', 'Chord recognition'],
@@ -79,7 +80,7 @@ export default function Analyse() {
               ['scales', 'Scale matching'],
               ['ai', 'Writing explanations'],
             ].map(([k, label]) => {
-              const order = ['queued', 'load', 'features', 'chords', 'separation', 'transcription', 'tabs', 'scales', 'assemble', 'ai', 'save', 'done']
+              const order = ['queued', 'download', 'load', 'features', 'chords', 'separation', 'transcription', 'tabs', 'scales', 'assemble', 'ai', 'save', 'done']
               const cur = order.indexOf(job?.stage ?? 'queued')
               const mine = order.indexOf(k)
               const done = cur > mine

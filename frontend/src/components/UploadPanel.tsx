@@ -69,11 +69,11 @@ export default function UploadPanel({ compact = false, onStarted }: Props) {
 
   const start = async () => {
     if (!file) return
+    navigate('/analyse')
     try {
       setUploadPct(0)
       const id = await runFile(file, opts, setUploadPct)
       onStarted?.(id)
-      navigate('/analyse')
     } catch {
       /* error surfaced through context */
     }
@@ -83,10 +83,10 @@ export default function UploadPanel({ compact = false, onStarted }: Props) {
   const startUrl = async () => {
     if (!url.trim()) return
     setFetching(true)
+    navigate('/analyse')
     try {
       const id = await runUrl(url.trim(), opts)
       onStarted?.(id)
-      navigate('/analyse')
     } catch (e) {
       // The backend tells us *why* a platform refused and what to do instead.
       const msg = e instanceof Error ? e.message : String(e)

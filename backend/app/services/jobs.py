@@ -108,8 +108,9 @@ def submit(jid: str, fn: Callable, *args, **kwargs) -> None:
             _update(job_id, status="cancelled", message="Cancelled")
         except Exception as exc:  # noqa: BLE001
             tb = traceback.format_exc(limit=4)
+            msg = getattr(exc, "message", str(exc))
             _update(job_id, status="error", stage="error",
-                    message=f"{type(exc).__name__}: {exc}", error=tb)
+                    message=f"{msg}", error=tb)
         finally:
             _cleanup_old()
 

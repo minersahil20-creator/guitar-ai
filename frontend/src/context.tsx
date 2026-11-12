@@ -78,11 +78,44 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
     }
   }, [setJobId])
 
-  // restore the last analysis on first load
+  // restore the last analysis or resume active job on first load
   useEffect(() => {
     if (jobId && !result) {
-      api.result(jobId).then(setResult).catch(() => {
-        localStorage.removeItem(STORAGE_KEY)
+      api.job(jobId).then(async (j) => {
+        if (j.status === 'done') {
+          const r = await api.result(jobId)
+          setResult(r)
+        } else if (j.status === 'queued' || j.status === 'running') {
+          setLoading(true)
+          setJob(j)
+          try {
+            await new Promise<void>((resolve, reject) => {
+              const poll = async () => {
+                try {
+                  const curr = await api.job(jobId)
+                  setJob(curr)
+                  if (curr.status === 'done') { resolve(); return }
+                  if (curr.status === 'error') { reject(new Error(curr.message || 'Analysis failed')); return }
+                  if (curr.status === 'cancelled') { reject(new Error('Cancelled')); return }
+                  setTimeout(poll, 700)
+                } catch (e) { reject(e) }
+              }
+              poll()
+            })
+            const r = await api.result(jobId)
+            setResult(r)
+          } catch (e) {
+            setError(e instanceof Error ? e.message : String(e))
+          } finally {
+            setLoading(false)
+          }
+        } else {
+          localStorage.removeItem(STORAGE_KEY)
+        }
+      }).catch(() => {
+        api.result(jobId).then(setResult).catch(() => {
+          localStorage.removeItem(STORAGE_KEY)
+        })
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -93,6 +126,16 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
       setLoading(true)
       setError(null)
       setResult(null)
+      setJob({
+        id: 'pending',
+        kind: 'analyse',
+        status: 'queued',
+        stage: 'load',
+        progress: 2,
+        message: 'Uploading and preparing track…',
+        created_at: Date.now() / 1000,
+        updated_at: Date.now() / 1000,
+      })
       try {
         const { job_id } = await api.analyseFile(file, options, onProgress)
         setJobId(job_id)
@@ -127,6 +170,16 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
       setLoading(true)
       setError(null)
       setResult(null)
+      setJob({
+        id: 'pending',
+        kind: 'analyse',
+        status: 'queued',
+        stage: 'download',
+        progress: 2,
+        message: 'Fetching audio from link…',
+        created_at: Date.now() / 1000,
+        updated_at: Date.now() / 1000,
+      })
       try {
         const { job_id } = await api.analyseUrl(url, options)
         setJobId(job_id)
