@@ -63,23 +63,30 @@ def extract(y: np.ndarray, sr: int) -> Features:
     duration = float(len(y)) / float(sr)
     f = Features(y=np.asarray(y, dtype=np.float32), sr=sr, duration=duration)
 
+    # Downsample to 22.05 kHz for lightning-fast feature extraction and minimal RAM footprint
+    target_sr = 22050 if sr > 22050 else sr
+    if target_sr != sr:
+        y_proc = librosa.resample(f.y, orig_sr=sr, target_sr=target_sr)
+    else:
+        y_proc = f.y
+
     # ── 1. Harmonic / percussive separation (HPSS) ───────────────
     # Chords live in the harmonic part; drums in the percussive part.
     def hpss():
-        return librosa.effects.hpss(f.y, margin=(1.0, 5.0))
+        return librosa.effects.hpss(y_proc, margin=(1.0, 5.0))
     got = _safe(hpss, None)
     if got is not None:
         f.y_harmonic = np.asarray(got[0], dtype=np.float32)
         f.y_percussive = np.asarray(got[1], dtype=np.float32)
     else:
-        f.y_harmonic = f.y.copy()
-        f.y_percussive = np.zeros_like(f.y)
+        f.y_harmonic = y_proc.copy()
+        f.y_percussive = np.zeros_like(y_proc)
 
     # ── 2. Tempo + beats ────────────────────────────────────────
     def tempo_beats():
         # start_bpm hint keeps the tracker from locking onto half/double time
         tempo, beats = librosa.beat.beat_track(
-            y=f.y_percussive if f.y_percussive.any() else f.y, sr=sr, units="time", start_bpm=110.0
+            y=f.y_percussive if f.y_percussive.any() else y_proc, sr=target_sr, units="time", start_bpm=110.0
         )
         tempo = float(np.atleast_1d(tempo)[0])
         beats = np.asarray(beats, dtype=float)
@@ -104,17 +111,17 @@ def extract(y: np.ndarray, sr: int) -> Features:
         bpo = 12 if settings.IS_RENDER else 36
         n_oct = 6 if settings.IS_RENDER else 7
         c = librosa.feature.chroma_cqt(
-            y=f.y_harmonic if f.y_harmonic.any() else f.y,
-            sr=sr, hop_length=hop, bins_per_octave=bpo, n_octaves=n_oct,
+            y=f.y_harmonic if f.y_harmonic.any() else y_proc,
+            sr=target_sr, hop_length=hop, bins_per_octave=bpo, n_octaves=n_oct,
             fmin=librosa.note_to_hz("C1"), cqt_mode="full",
         )
-        times = librosa.frames_to_time(np.arange(c.shape[1]), sr=sr, hop_length=hop)
+        times = librosa.frames_to_time(np.arange(c.shape[1]), sr=target_sr, hop_length=hop)
         return c, times, hop
     got = _safe(chroma_cqt, None)
     if got is None:  # last resort: STFT chroma
         hop = 512
-        c = librosa.feature.chroma_stft(y=f.y, sr=sr, hop_length=hop)
-        times = librosa.frames_to_time(np.arange(c.shape[1]), sr=sr, hop_length=hop)
+        c = librosa.feature.chroma_stft(y=y_proc, sr=target_sr, hop_length=hop)
+        times = librosa.frames_to_time(np.arange(c.shape[1]), sr=target_sr, hop_length=hop)
         got = (c, times, hop)
     f.chroma, f.chroma_times, _ = got
     f.chroma = np.asarray(f.chroma, dtype=np.float32)
@@ -122,11 +129,8 @@ def extract(y: np.ndarray, sr: int) -> Features:
     # ── 4. Bass chroma (low two octaves only) ──────────────────
     def bass():
         hop = 512
-        # Bass register of a guitar / bass guitar: C2 (65 Hz) up to C4 (262 Hz).
-        # (The old range started at C1, which is below the guitar entirely and
-        #  picked up kick-drum rumble instead of the actual bass note.)
-        C = np.abs(librosa.cqt(y=f.y, sr=sr, hop_length=hop, fmin=librosa.note_to_hz("C2"),
-                               n_bins=48, bins_per_octave=24))
+        C = np.abs(librosa.cqt(y=y_proc, sr=target_sr, hop_length=hop, fmin=librosa.note_to_hz("C2"),
+                               n_bins=36 if settings.IS_RENDER else 48, bins_per_octave=12 if settings.IS_RENDER else 24))
         pcs = np.zeros((12, C.shape[1]), dtype=np.float32)
         for i in range(C.shape[0]):
             pcs[i % 12] += C[i]
