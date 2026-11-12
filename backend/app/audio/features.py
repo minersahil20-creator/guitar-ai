@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from app.audio.theory import KS_MAJOR, KS_MINOR, TEMPERLEY_MAJOR, TEMPERLEY_MINOR, pc_name
+from app.core.config import settings
 
 
 @dataclass
@@ -100,9 +101,11 @@ def extract(y: np.ndarray, sr: int) -> Features:
     # CQT chroma handles guitar timbre far better than STFT chroma.
     def chroma_cqt():
         hop = 512
+        bpo = 12 if settings.IS_RENDER else 36
+        n_oct = 6 if settings.IS_RENDER else 7
         c = librosa.feature.chroma_cqt(
             y=f.y_harmonic if f.y_harmonic.any() else f.y,
-            sr=sr, hop_length=hop, bins_per_octave=36, n_octaves=7,
+            sr=sr, hop_length=hop, bins_per_octave=bpo, n_octaves=n_oct,
             fmin=librosa.note_to_hz("C1"), cqt_mode="full",
         )
         times = librosa.frames_to_time(np.arange(c.shape[1]), sr=sr, hop_length=hop)

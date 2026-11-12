@@ -93,8 +93,10 @@ class Settings:
     GEMINI_ENABLED: bool = _env_bool("GEMINI_ENABLED", True)
 
     # ── heavy model switches (all optional) ──────────────────
+    IS_RENDER: bool = os.getenv("RENDER") == "true"
     USE_BASIC_PITCH: bool = _env_bool("USE_BASIC_PITCH", True)
-    USE_DEMUCS: bool = _env_bool("USE_DEMUCS", True)
+    # Default to False on 512MB Render containers to prevent OOM crash; True locally
+    USE_DEMUCS: bool = _env_bool("USE_DEMUCS", not IS_RENDER)
     DEMUCS_MODEL: str = os.getenv("DEMUCS_MODEL", "htdemucs_6s")  # 6-stem -> real guitar stem
     DEMUCS_FALLBACK_MODEL: str = os.getenv("DEMUCS_FALLBACK_MODEL", "htdemucs")
     DEMUCS_DEVICE: str = os.getenv("DEMUCS_DEVICE", "cpu")
